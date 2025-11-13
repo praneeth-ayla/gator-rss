@@ -54,3 +54,11 @@ func handlerRegister(s *state, cmd command) error {
 	fmt.Println("the user was created", user)
 	return nil
 }
+
+func handlerReset(s *state, cmd command) error {
+	err := s.db.TruncateUsers(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
