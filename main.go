@@ -1,37 +1,22 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	"database/sql"
 	"log"
 	"os"
 
+	_ "github.com/lib/pq"
 	"github.com/praneeth-ayla/go-rss/internal/config"
+	"github.com/praneeth-ayla/go-rss/internal/database"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
-}
-
-func handlerLogin(s *state, cmd command) error {
-
-	if len(cmd.Args) < 1 {
-		return errors.New("the login handler expects a single argument, the username")
-	}
-
-	username := cmd.Args[0]
-	err := s.cfg.SetUser(username)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("the user %s has been set", username)
-	return nil
 }
 
 func main() {
 	cfg, err := config.Read()
-
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
@@ -40,11 +25,20 @@ func main() {
 		cfg: &cfg,
 	}
 
+	db, err := sql.Open("postgres", cfg.DbURL)
+	if err != nil {
+		log.Fatal("Error connecting to db:", err)
+	}
+
+	dbQueries := database.New(db)
+	programState.db = dbQueries
+
 	cmds := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
 	}
 
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
@@ -54,6 +48,7 @@ func main() {
 
 	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
 	if err != nil {
+		os.Exit(1)
 		log.Fatal(err)
 	}
 }
