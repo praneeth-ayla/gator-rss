@@ -56,7 +56,7 @@ func handlerRegister(s *state, cmd command) error {
 }
 
 func handlerReset(s *state, cmd command) error {
-	err := s.db.TruncateUsers(context.Background())
+	err := s.db.DeleteUsers(context.Background())
 	if err != nil {
 		return err
 	}
@@ -78,6 +78,45 @@ func handlerGetUsers(s *state, cmd command) error {
 		}
 		fmt.Printf("* %v\n", user.Name)
 	}
+
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+	ctx := context.Background()
+	feed, err := fetchFeed(ctx, "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("%+v\n", feed)
+	return nil
+}
+
+func handlerAddFeed(s *state, cmd command) error {
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
+	if err != nil {
+		return err
+	}
+
+	name := cmd.Args[0]
+	url := cmd.Args[1]
+	if name == "" || url == "" {
+		return errors.New("add feed command requires name and url")
+	}
+
+	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      name,
+		Url:       url,
+		UserID:    user.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(feed)
 
 	return nil
 }
