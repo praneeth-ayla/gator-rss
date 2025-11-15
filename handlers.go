@@ -190,16 +190,18 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	return nil
 }
 
-func middlewareLoggedIn(
-	handler func(s *state, cmd command, user database.User) error,
-) func(*state, command) error {
+func handlerUnfollow(s *state, cmd command, user database.User) error {
+	ctx := context.Background()
+	url := cmd.Args[0]
+	username := s.cfg.CurrentUserName
 
-	return func(s *state, cmd command) error {
-		user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUserName)
-		if err != nil {
-			return err
-		}
-
-		return handler(s, cmd, user)
+	err := s.db.DeleteFeedFollow(ctx, database.DeleteFeedFollowParams{
+		Url:  url,
+		Name: username,
+	})
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
