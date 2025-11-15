@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/praneeth-ayla/go-rss/internal/database"
+	"github.com/praneeth-ayla/gator/internal/database"
 )
 
 // handlerLogin handles user login by setting the current user in the config.

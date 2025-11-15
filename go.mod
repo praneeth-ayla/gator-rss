@@ -1,4 +1,4 @@
-module github.com/praneeth-ayla/go-rss
+module github.com/praneeth-ayla/gator
 
 go 1.25.3
 

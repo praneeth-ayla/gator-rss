@@ -6,8 +6,8 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
-	"github.com/praneeth-ayla/go-rss/internal/config"
-	"github.com/praneeth-ayla/go-rss/internal/database"
+	"github.com/praneeth-ayla/gator/internal/config"
+	"github.com/praneeth-ayla/gator/internal/database"
 )
 
 // state holds the application's global state, including database queries and configuration.

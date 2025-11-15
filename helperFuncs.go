@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/praneeth-ayla/go-rss/internal/database"
+	"github.com/praneeth-ayla/gator/internal/database"
 )
 
 // RSSFeed represents the structure of an RSS feed XML.
