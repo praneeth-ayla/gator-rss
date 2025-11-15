@@ -9,6 +9,7 @@ import (
 	"database/sql"
 )
 
+// DBTX is an interface for database transaction or connection.
 type DBTX interface {
 	ExecContext(context.Context, string, ...interface{}) (sql.Result, error)
 	PrepareContext(context.Context, string) (*sql.Stmt, error)
@@ -16,14 +17,17 @@ type DBTX interface {
 	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
 }
 
+// New creates a new Queries object with the given DBTX.
 func New(db DBTX) *Queries {
 	return &Queries{db: db}
 }
 
+// Queries holds the database connection and provides methods for executing queries.
 type Queries struct {
 	db DBTX
 }
 
+// WithTx creates a new Queries object with a transaction.
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
 		db: tx,
